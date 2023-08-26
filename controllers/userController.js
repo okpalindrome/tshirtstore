@@ -242,3 +242,97 @@ exports.updateUserDetails = BigPromise(async (req, res, next) => {
     })
 
 })
+
+exports.adminAllUser = BigPromise(async (req, res, next) => {
+    const users = await User.find()
+
+    res.status(200).json({
+        success: true,
+        users
+    })
+})
+
+exports.adminGetSingleUser = BigPromise(async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id)
+        if (!user) {
+            return next(new CustomError("User does not exist", 404))
+        }
+    
+        res.status(200).json({
+            success: true,
+            user
+        })
+    }
+    catch(error) {
+        return next(new CustomError("User ID is invalid or does not exist", 400))
+    }
+
+})
+
+exports.adminUpdateOneUserDetails = BigPromise(async (req, res, next) => {
+    
+    const newData = {}
+    if(req.body.name) {
+       newData.name = req.body.name 
+    }
+
+    if(req.body.email) {
+        newData.email = req.body.email
+    }
+
+    if(req.body.role) {
+        if (["user", "admin", "manager"].includes(req.body.role)) {
+            newData.role = req.body.role
+        }
+        else {
+            return next(new CustomError("Please select role - user, manager or admin only", 400))
+        }
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, newData, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "Updated the details",
+        user
+    })
+
+})
+
+exports.adminDeleteOneUser = BigPromise(async (req, res, next) => {
+    
+    try {
+        const user = await User.findById(req.params.id)
+
+        if(!user) {
+            return next(new CustomError("User does not exist", 404))
+        }
+        
+        const imageId = user.photo.id
+        await cloudinary.v2.uploader.destroy(imageId)
+        
+        await User.deleteOne({_id: req.params.id})
+
+        res.status(200).json({
+            success: true,
+            message: "User removed"
+        })
+    }
+    catch(error) {
+        return next(new CustomError("User ID is invalid or does not exist", 400))
+    }
+})
+
+exports.managerAllUser = BigPromise(async (req, res, next) => {
+    const users = await User.find({role: "user"}, {"name":1, "email":1, "role":1 ,"_id":0})
+
+    res.status(200).json({
+        success: true,
+        users
+    })
+})
