@@ -113,3 +113,96 @@ exports.getOneProduct = BigPromise(async (req, res, next) => {
     }
     
 })
+
+exports.adminUpdateOneProduct = BigPromise(async (req, res, next) => {
+    
+    const newData = {}
+    let imageArray = []
+    // try {
+        
+    if(!req.params.id) {
+        return next(new CustomError("Please provide product id", 400))
+    }
+    
+    const product = await Product.findById(req.params.id)
+
+    if(!product) {
+        return next(new CustomError("Product does not exist", 404))
+    }
+
+    req.body.name ? newData.name = req.body.name : ""
+    req.body.price ? newData.price = req.body.price : ""
+    req.body.description? newData.description = req.body.description : ""
+    req.body.brand? newData.brand = req.body.brand : ""
+    req.body.stock? newData.stock = req.body.stock : ""
+
+    if(req.body.category) {
+        if(!['shortsleeves', 'longsleeves', 'sweatshirt', 'hoodies'].includes(req.body.category)) {
+            return next(new CustomError("Please select category ONLY from: short-sleeves, long-sleeves, sweat-shirts, hoodies"))
+        }
+        newData.category = req.body.category
+    }
+
+    if(req.files) {
+        // delete existing
+        for (let index = 0; index < product.photos.length; index++) {
+            await cloudinary.v2.uploader.destroy(product.photos[index].id)
+        }
+
+        // upload new photos
+        for (let index = 0; index < req.files.photos.length; index++) {
+            let result = await cloudinary.v2.uploader.upload(req.files.photos[index].tempFilePath, 
+                {
+                folder: "products",
+            })
+
+            imageArray.push({
+                id: result.public_id,
+                secure_url: result.secure_url
+            })
+        } 
+        
+        newData.photos = imageArray
+    }
+    
+    // } catch (error) {
+    //     return next(new CustomError("Invalid Product ID", 400))
+    // }
+
+    productUpdated = await Product.findByIdAndUpdate(req.params.id, newData, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false
+    })
+
+    res.status(200).json({
+        success: true,
+        productUpdated
+    })
+})
+
+exports.adminDeleteOneProduct = BigPromise(async (req, res, next) => {
+    
+    try {
+    const product = await Product.findById(req.params.id)
+
+    if(!product) {
+        return next(new CustomError("Product does not exist", 404))
+    }
+
+    // delete photos
+    for (let index = 0; index < product.photos.length; index++) {
+        await cloudinary.v2.uploader.destroy(product.photos[index].id)
+    }
+
+    await Product.deleteOne({_id: req.params.id})
+
+    res.status(200).json({
+        success: true,
+        message: "Product removed."
+    })
+
+    } catch (error) {
+        return next(new CustomError("Invalid Product ID", 401))
+    }
+})
