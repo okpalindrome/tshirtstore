@@ -4,6 +4,7 @@ const CustomError = require("../utils/customError");
 const cloudinary = require("cloudinary");
 const WhereClause = require("../utils/whereClause");
 const product = require("../models/product");
+const bigPromise = require("../middlewares/bigPromise");
 
 exports.addProduct = BigPromise(async (req, res, next) => {
     
@@ -205,4 +206,98 @@ exports.adminDeleteOneProduct = BigPromise(async (req, res, next) => {
     } catch (error) {
         return next(new CustomError("Invalid Product ID", 401))
     }
+})
+
+exports.addReview = BigPromise(async (req, res, next) => {
+
+    const {rating, comment, productID} = req.body
+
+    if(!rating || !comment || !productID) {
+        return next(new CustomError("Please provide all review information - rating(1-5), comment and productID", 400))
+    }
+
+    const review = {
+        user: req.user._id,
+        name: req.user.name,
+        rating: Number(rating),
+        comment
+    }
+
+    const product = await Product.findById(productID)
+
+    // looping through each review field for the given product
+    const alreadyReviewed = product.reviews.find( 
+        (rev) => rev.user.toString() === req.user._id.toString())
+
+    if(alreadyReviewed) {
+        // picking that particular review field to edit
+        product.reviews.forEach((review) => {
+            if(review.user.toString() === req.user._id.toString()) {
+                review.comment = comment
+                review.rating = rating
+            }
+        })
+    } else {
+        product.reviews.push(review)
+        product.numberOfReviews = product.reviews.length
+    }
+
+    // average/overall ratings
+    product.ratings = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
+
+    // save DB
+    await product.save({validateBeforeSave: false})
+
+    res.status(200).json({
+        success: true,
+        message: review
+    })
+
+})
+
+exports.deleteReview = BigPromise(async (req, res, next) => {
+    const productID = req.query.productID
+
+    const product = await Product.findById(productID)
+
+    // get the user's review on the product
+    const reviews = product.reviews.filter((rev) => rev.user.toString() !== req.user._id.toString())
+
+    const numberOfReviews = reviews.length
+    let ratings
+    if (numberOfReviews === 0) {
+         ratings = 0
+    } else {
+        ratings = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
+    }
+
+    // update the product
+    await Product.findByIdAndUpdate(productID, {
+        reviews,
+        ratings,
+        numberOfReviews
+    }, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "Deleted your review on this product"
+    })
+
+})
+
+exports.getOnlyReviewForOneProduct = BigPromise(async (req, res, next) => {
+    const productID = req.query.productID
+
+    const product = await Product.findById(productID)
+
+    res.status(200).json({
+        success: true,
+        "Overall Ratings": product.ratings,
+        "Total number of reviews": product.numberOfReviews,
+        reviews: product.reviews
+    })
 })
