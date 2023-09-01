@@ -3,8 +3,6 @@ const Product = require("../models/product");
 const CustomError = require("../utils/customError");
 const cloudinary = require("cloudinary");
 const WhereClause = require("../utils/whereClause");
-const product = require("../models/product");
-const bigPromise = require("../middlewares/bigPromise");
 
 exports.addProduct = BigPromise(async (req, res, next) => {
     
