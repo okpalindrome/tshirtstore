@@ -123,6 +123,22 @@ exports.adminUpdateOrder = BigPromise(async (req, res, next) => {
     })
 })
 
+exports.adminDeleteOrder = BigPromise(async (req, res, next) => {
+    const order = await Order.findById(req.params.id)
+
+    if(!order) {
+        return next(new CustomError("Product deos not exist", 404))
+    }
+
+    // object.remove() does not work
+    await Order.deleteOne({_id: req.params.id})
+
+    res.status(200).json({
+        success: true,
+        message: "Order removed"
+    })
+})
+
 // updating the stock
 async function updateProductStock(productId, quantity) {
     const product = await Product.findById(productId)
