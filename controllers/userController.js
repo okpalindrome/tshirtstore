@@ -34,7 +34,8 @@ exports.signup = BigPromise(async (req, res, next) => {
         photo: {
             id: result.public_id,
             secure_url: result.secure_url
-        }    
+        } ,
+        role: "user" // to avoid privilege escalation  
     })
 
     cookieToken(user, res)
