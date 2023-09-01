@@ -19,7 +19,7 @@ const orderSchema = new mongoose.Schema({
             required: true
         },
         postalCode: {
-            type: String,
+            type: Number,
             required: true
         },
         country: {
@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema({
                 required: true,
             },
             price: {
-                type: String,
+                type: Number,
                 required: true,
             },
             product: {
@@ -55,7 +55,8 @@ const orderSchema = new mongoose.Schema({
     ],
     paymentInfo: {
         id: {
-            type: String
+            type: String,
+            required: true
         }
     },
     taxAmount : {
@@ -67,7 +68,7 @@ const orderSchema = new mongoose.Schema({
         required: true,
     },
     totalAmount: {
-        type: String,
+        type: Number,
         required: true,
     },
     orderStatus: {
