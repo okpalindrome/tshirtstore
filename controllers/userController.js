@@ -270,6 +270,7 @@ exports.adminGetSingleUser = BigPromise(async (req, res, next) => {
 
 })
 
+// swagger setup remaining - 1
 exports.adminUpdateOneUserDetails = BigPromise(async (req, res, next) => {
     
     const newData = {}
@@ -304,6 +305,7 @@ exports.adminUpdateOneUserDetails = BigPromise(async (req, res, next) => {
 
 })
 
+// swagger setup remaining - 2
 exports.adminDeleteOneUser = BigPromise(async (req, res, next) => {
     
     try {
