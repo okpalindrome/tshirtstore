@@ -9,13 +9,21 @@ const crypto = require('crypto')
 exports.signup = BigPromise(async (req, res, next) => {
 
     if(!req.files){
+        res.status(400).json({
+            success: false,
+            message: "Photo is required for signup"
+        })
         return next(new CustomError("Photo is required for signup", 400))
     }
 
     const {name, email, password} = req.body
 
     if(!name || !email || !password) {
-        return next(new CustomError('Name, email and password are requied!', 400))
+        res.status(400).json({
+            success: false,
+            message: "Please provide all required information - name, email and password"
+        })
+        return next(new CustomError('Name, email and password are required!', 400))
     }
 
     let file = req.files.photo
@@ -54,6 +62,10 @@ exports.login = BigPromise(async (req, res, next) => {
 
     // user exist or not
     if (!user) {
+        res.status(400).json({
+            success: false,
+            message: "Email or password is incorrect"
+        })
         return next(new CustomError("Email or password is incorrect", 400))
     }
 
@@ -61,6 +73,10 @@ exports.login = BigPromise(async (req, res, next) => {
     const isPasswordValid = await user.isValidatedPassword(password)
 
     if(!isPasswordValid){
+        res.status(400).json({
+            success: false,
+            message: "Email or password is incorrect"
+        })
         return next(new CustomError("Email or password is incorrect"))
     }
 
@@ -86,6 +102,10 @@ exports.forgotPassword = BigPromise(async (req, res, next) => {
     const {email} = req.body
 
     if(!email){
+        res.status(400).json({
+            success: false,
+            message: "Please provide a valid email address"
+        })
         return next(new CustomError("Please provide a valid email address", 400))
     }
 
@@ -93,6 +113,10 @@ exports.forgotPassword = BigPromise(async (req, res, next) => {
     const user = await User.findOne({email})
 
     if (!user){
+        res.status(200).json({
+            success: false,
+            message: "If user exist, email will be send successfully"
+        })
         return next(new CustomError("Please provide a valid email address", 400))
     }
 
@@ -115,7 +139,7 @@ exports.forgotPassword = BigPromise(async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: "Email sent successfully."
+            message: "If user exist, email will be send successfully"
         })
 
     } catch (error) {
@@ -139,10 +163,18 @@ exports.passwordReset = BigPromise(async (req, res, next) => {
         forgotPasswordExpiry: {$gt: Date.now()}})
     
     if (!user) {
+        res.status(400).json({
+            success: false,
+            message: "Token is invalid or expired"
+        })
         return next(new CustomError("Token is invalid or expired", 400))
     }
 
     if (req.body.password !== req.body.confirmPassword) {
+        res.status(400).json({
+            success: false,
+            message: "Password and confirm password do not match"
+        })
         return next(new CustomError("Password and confirm password do not match", 400))
     }
 
@@ -176,10 +208,18 @@ exports.changePassword = BigPromise(async (req, res, next) => {
     const {currentPassword, password, confirmPassword} = req.body
 
     if(!currentPassword || !password || !confirmPassword) {
+        res.status(400).json({
+            success: false,
+            message: "Please provide all fields - currentPassword, password and confirmPassword"
+        })
         return(new CustomError("Please provide all fields - currentPassword, password and confirmPassword"))
     }
 
     if(req.body.password !== req.body.confirmPassword) {
+        res.status(400).json({
+            success: false,
+            message: "New password and confirm password do not match."
+        })
         return next(new CustomError("New Password and confirm password do not match", 400))
     }
     const userId = req.user.id
@@ -189,6 +229,10 @@ exports.changePassword = BigPromise(async (req, res, next) => {
     const isValidCurrentPassword = await user.isValidatedPassword(currentPassword)
 
     if(!isValidCurrentPassword) {
+        res.status(400).json({
+            success: false,
+            message: "Current passowrd is incorrect"
+        })
         return next(new CustomError("Current password is incorrect", 400))
     }
     
@@ -256,6 +300,10 @@ exports.adminGetSingleUser = BigPromise(async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
         if (!user) {
+            res.status(404).json({
+                success: false,
+                message: "User does not exist"
+            })
             return next(new CustomError("User does not exist", 404))
         }
     
@@ -265,12 +313,15 @@ exports.adminGetSingleUser = BigPromise(async (req, res, next) => {
         })
     }
     catch(error) {
+        res.status(404).json({
+            success: false,
+            message: "User ID is invalid or does not exist"
+        })
         return next(new CustomError("User ID is invalid or does not exist", 400))
     }
 
 })
 
-// swagger setup remaining - 1
 exports.adminUpdateOneUserDetails = BigPromise(async (req, res, next) => {
     
     const newData = {}
@@ -287,6 +338,10 @@ exports.adminUpdateOneUserDetails = BigPromise(async (req, res, next) => {
             newData.role = req.body.role
         }
         else {
+            res.status(400).json({
+                success: false,
+                message: "Please select role - user, manager or admin only"
+            })
             return next(new CustomError("Please select role - user, manager or admin only", 400))
         }
     }
@@ -305,13 +360,16 @@ exports.adminUpdateOneUserDetails = BigPromise(async (req, res, next) => {
 
 })
 
-// swagger setup remaining - 2
 exports.adminDeleteOneUser = BigPromise(async (req, res, next) => {
     
     try {
         const user = await User.findById(req.params.id)
 
         if(!user) {
+            res.status(404).json({
+                success: false,
+                message: "User does not exist"
+            })
             return next(new CustomError("User does not exist", 404))
         }
         
@@ -326,6 +384,10 @@ exports.adminDeleteOneUser = BigPromise(async (req, res, next) => {
         })
     }
     catch(error) {
+        res.status(400).json({
+            success: false,
+            message: "User ID is invalid or does not exist"
+        })
         return next(new CustomError("User ID is invalid or does not exist", 400))
     }
 })

@@ -13,7 +13,7 @@ const mailHelper = async (option) => {
       });
     
     const message = {
-        from: '22219fefbf-e4cc46@inbox.mailtrap.io', // Add, even if it shows disabled on your mailtrap.io testing account
+        from: process.env.SMTP_SENDER, // Add, even if it shows disabled on your mailtrap.io testing account
         to: option.email, // list of receivers
         subject: option.subject, // Subject line
         text: option.message, // plain text body
