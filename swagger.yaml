@@ -47,7 +47,7 @@ paths:
   /signup:
     post:
       tags:
-        - User
+        - User Management
       summary: signup a new user. required files are - name, email, password and photo
       requestBody:
         content:
@@ -106,13 +106,22 @@ paths:
                         type: string
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /login:
     post:
       tags:
-        - User
+        - User Management
       summary: login a new user. required fields are -  email and password. Also adds httpOnly cookie in browser. It sends token in response too.
       requestBody:
         content:
@@ -129,7 +138,7 @@ paths:
                   type: string
       responses:
         200:
-          description: All good success
+          description: Login success!
           content:
             application/json:
               schema:
@@ -161,13 +170,22 @@ paths:
                         type: string
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /logout:
     get:
       tags:
-        - User
+        - User Management
       summary: get request to logout the user. Also removes httpOnly cookies 
       responses:
         200:
@@ -190,7 +208,7 @@ paths:
   /forgotPassword:
     post:
       tags:
-        - User
+        - User Management
       summary: sends an email with link to forgot password. Contains the token for user validation. Public hosted version will not send email to your account. Use your own SMTP details to access this feature on local project
       requestBody:
         content:
@@ -204,7 +222,7 @@ paths:
                   type: string
       responses:
         200:
-          description: All good success
+          description: success If your email exist, you will receive the email
           content:
             application/json:
               schema:
@@ -216,13 +234,22 @@ paths:
                     type: string
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /password/reset/{token}:
     post:
       tags:
-        - User
+        - User Management
       summary: Allows user to reset password, validated based on token. send password and confirm password fields
       parameters:
         - name: token
@@ -277,13 +304,22 @@ paths:
                         type: string
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /userDashboard:
     get:
       tags:
-        - User
+        - User Management
       summary: Gets all details about logged in user. Send token in cookies as named token or send Bearer Auth
       requestBody:
       responses:
@@ -318,14 +354,23 @@ paths:
                         type: string
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /password/update:
     post:
       tags:
-        - User
-      summary: User can update the password if he is logged in. Send oldPassword and password
+        - User Management
+      summary: User can update the password if they are logged in. Send oldPassword, new password and confirm password
       requestBody:
         content:
           application/json:
@@ -374,22 +419,28 @@ paths:
                         type: string
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /userDashboard/update:
     post:
       tags:
-        - User
+        - User Management
       summary: User can update the name, emails and photo. Photo is optional
       requestBody:
         content:
           multipart/form-data:
             schema:
               type: object
-              required:
-                - name
-                - email
               properties:
                 name:
                   type: string
@@ -410,16 +461,27 @@ paths:
                 properties:
                   success:
                     type: boolean
+                  message:
+                    type: string
                   
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /admin/users:
     get:
       tags:
-        - Admin
+        - User Management
       summary: If user is admin, response will get array of all users
       responses:
         200:
@@ -454,14 +516,23 @@ paths:
                   
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /admin/user/{id}:
     get:
       tags:
-        - Admin
-      summary: If user is admin, response will get details of 1 user
+        - User Management
+      summary: If user is admin, response will get details of one user
       parameters:
         - name: id
           in: path
@@ -501,11 +572,20 @@ paths:
                   
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
     put:
       tags:
-        - Admin
+        - User Management
       summary: If user is admin, he can update mentioned fields in user
       parameters:
         - name: id
@@ -513,23 +593,20 @@ paths:
           required: true
           schema:
             type: string
-        - name: name
-          in: formData
-          required: true
-          schema:
-            type: string
-        - name: email
-          in: formData
-          required: true
-          schema:
-            type: string
-        - name: role
-          in: formData
-          required: true
-          schema:
-            type: string
-            enum: [user, admin, manager]
       requestBody: 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                  enum: [user, admin, manager]
+
       responses:
         200:
           description: All good success
@@ -543,11 +620,20 @@ paths:
                   
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
     delete:
       tags:
-        - Admin
+        - User Management
       summary: If user is admin, delete the user with given id
       parameters:
         - name: id
@@ -569,13 +655,22 @@ paths:
                   
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /manager/users:
     get:
       tags:
-        - Manager
+        - User Management
       summary: If manager, response will get array of all users whose role is user
       requestBody:
         
@@ -612,11 +707,19 @@ paths:
                   
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
-
-  /adminUpdateOneUser:
+  # /adminUpdateOneUser:
     post:
       tags:
         - Admin
@@ -670,7 +773,16 @@ paths:
                       createdAt:
                         type: string
         400:
-          description: User role must be only from - user, manager or admin
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500: 
           description: Something went wrong
                   
