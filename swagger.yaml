@@ -719,82 +719,13 @@ paths:
         500:
           description: internal server error
 
-  # /adminUpdateOneUser:
-    post:
-      tags:
-        - Admin
-      summary: Admin can update the user details like name, email or role
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                role:
-                  type: string
-      responses:
-        200:
-          description: User details updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  user:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                      email:
-                        type: string
-                      role:
-                        type: string
-                      photo:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          secure_url:
-                            type: string
-                      _id:
-                        type: string
-                      createdAt:
-                        type: string
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-        500: 
-          description: Something went wrong
-                  
-                
 
 # routes/product.js
   /products:
     get:
       tags:
-        - Product
+        - Product Management
       summary: A simple get request will give you all available products
-      requestBody:
         
       responses:
         200:
@@ -806,7 +737,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                  filteredProductNumber:
+                  filteredProductCount:
                     type: number
                   totalcountProduct:
                     type: number
@@ -827,11 +758,15 @@ paths:
                           type: string
                         brand: 
                           type: string
+                        stock:
+                          type: number
                         ratings: 
                           type: number
                         numberOfReviews: 
                           type: number
                         user: 
+                          type: string
+                        createdAt:
                           type: string
                         photos: 
                           type: array
@@ -842,12 +777,14 @@ paths:
                                 type: string
                               secure_url:
                                 type: string
+                              _id:
+                                type: string
                         reviews: 
                           type: array
                           items:
                             type: object
                             properties:
-                              id:
+                              _id:
                                 type: string
                               comment:
                                 type: string
@@ -865,7 +802,7 @@ paths:
   /product/{id}:
     get:
       tags:
-        - Product
+        - Product Management
       summary: Get a single product
       parameters:
         - name: id
@@ -873,7 +810,6 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
         
       responses:
         200:
@@ -900,11 +836,15 @@ paths:
                         type: string
                       brand: 
                         type: string
+                      stock:
+                        type: number
                       ratings: 
                         type: number
                       numberOfReviews: 
                         type: number
                       user: 
+                        type: string
+                      createdAt:
                         type: string
                       photos: 
                         type: array
@@ -915,12 +855,14 @@ paths:
                               type: string
                             secure_url:
                               type: string
+                            _id:
+                              type: string
                       reviews: 
                         type: array
                         items:
                           type: object
                           properties:
-                            id:
+                            _id:
                               type: string
                             comment:
                               type: string
@@ -932,16 +874,23 @@ paths:
                               type: number
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /admin/products:
     get:
       tags:
-        - Admin
-      summary: If user is admin, he get all products
-      
-      requestBody:
+        - Product Management
+      summary: If user is admin, get all products
         
       responses:
         200:
@@ -970,11 +919,15 @@ paths:
                           type: string
                         brand: 
                           type: string
+                        stock:
+                          type: number
                         ratings: 
                           type: number
                         numberOfReviews: 
                           type: number
                         user: 
+                          type: string
+                        createdAt:
                           type: string
                         photos: 
                           type: array
@@ -985,12 +938,14 @@ paths:
                                 type: string
                               secure_url:
                                 type: string
+                              _id:
+                                type: string
                         reviews: 
                           type: array
                           items:
                             type: object
                             properties:
-                              id:
+                              _id:
                                 type: string
                               comment:
                                 type: string
@@ -1002,16 +957,23 @@ paths:
                                 type: number
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
   /admin/product/add:
     post:
       tags:
-        - Admin
-      summary: If admin, Add a product
-
-        
+        - Product Management
+      summary: If admin, Add a new product
       requestBody:
         content:
           multipart/form-data:
@@ -1047,7 +1009,7 @@ paths:
                   required: true
                 photos:
                   in: formData
-                  description: The uploaded photos
+                  description: Upload photos
                   type: array
                   items:
                     type: file
@@ -1078,11 +1040,15 @@ paths:
                         type: string
                       brand: 
                         type: string
+                      stock:
+                        type: number
                       ratings: 
                         type: number
                       numberOfReviews: 
                         type: number
                       user: 
+                        type: string
+                      createdAt:
                         type: string
                       photos: 
                         type: array
@@ -1093,12 +1059,14 @@ paths:
                               type: string
                             secure_url:
                               type: string
+                            _id:
+                              type: string
                       reviews: 
                         type: array
                         items:
                           type: object
                           properties:
-                            id:
+                            _id:
                               type: string
                             comment:
                               type: string
@@ -1110,13 +1078,22 @@ paths:
                               type: number
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
   
   /admin/product/{id}:
     put:
       tags:
-        - Admin
+        - Product Management
       summary: If admin, update the product. photos are optional to pass. Rest all body is set to be updated to what you pass here.
       parameters:
         - name: id
@@ -1130,33 +1107,20 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required:
-                - name
-                - price
-                - description
-                - category
-                - stock
-                - brand
               properties:
                 name:
                   type: string
-                  required: true
                 price:
                   type: number
-                  required: true
                 description:
                   type: number
-                  required: true
                 category:
                   type: string
-                  required: true
                   enum: [shortsleeves, longsleeves, sweatshirt, hoodies]
                 stock:
                   type: number
-                  required: true
                 brand:
                   type: string
-                  required: true
                 photos:
                   in: formData
                   description: The uploaded photos
@@ -1188,11 +1152,15 @@ paths:
                         type: string
                       brand: 
                         type: string
+                      stock:
+                        type: number
                       ratings: 
                         type: number
                       numberOfReviews: 
                         type: number
                       user: 
+                        type: string
+                      createdAt:
                         type: string
                       photos: 
                         type: array
@@ -1203,12 +1171,14 @@ paths:
                               type: string
                             secure_url:
                               type: string
+                            _id:
+                              type: string
                       reviews: 
                         type: array
                         items:
                           type: object
                           properties:
-                            id:
+                            _id:
                               type: string
                             comment:
                               type: string
@@ -1220,11 +1190,20 @@ paths:
                               type: number
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
     delete:
       tags:
-        - Admin
+        - Product Management
       summary: If admin, pass the id of product and product will be removed
       parameters:
         - name: id
@@ -1232,9 +1211,7 @@ paths:
           required: true
           schema:
             type: string
-        
-      requestBody:
-        
+                
       responses:
         200:
           description: All good success
@@ -1250,13 +1227,22 @@ paths:
                   
         400:
           description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         500:
           description: internal server error
 
-  /reviews:
+  /product/reviews:
       get:
         tags:
-          - Product
+          - Product Management
         summary: A simple get request will give you all reviews for given products
         parameters:
         - name: id
@@ -1265,7 +1251,6 @@ paths:
           required: true
           schema:
             type: string
-        requestBody:
           
         responses:
           200:
@@ -1277,6 +1262,10 @@ paths:
                   properties:
                     success:
                       type: boolean
+                    Overall_Ratings:
+                      type: number
+                    Total_number_of_reviews:
+                      type: number
                     reviews:
                       type: array
                       items:
@@ -1295,15 +1284,22 @@ paths:
                           
           400:
             description: Bad request
+            content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
           500:
             description: internal server error
   
-  /review:
       put:
         tags:
-          - Product
+          - Product Management
         summary: A logged in user can post a review on any product. If review is already posted, it will just update the existing review
-        parameters:
         
         requestBody:
           content:
@@ -1313,7 +1309,7 @@ paths:
                 required:
                   - rating
                   - comment
-                  - productId
+                  - productID
                 properties:
                   rating:
                     type: number
@@ -1321,7 +1317,7 @@ paths:
                   comment:
                     type: string
                     required: true
-                  productId:
+                  productID:
                     type: string
                     required: true
         responses:
@@ -1334,56 +1330,43 @@ paths:
                   properties:
                     success:
                       type: boolean
-                    reviews:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          user:
-                            type: string
-                          name:
-                            type: string
-                          rating: 
-                            type: number
-                          comment: 
-                            type: string
-                          _id: 
-                            type: string
+                    message:
+                      type: object
+                      properties:
+                        user:
+                          type: string
+                        name:
+                          type: string
+                        rating: 
+                          type: number
+                        comment: 
+                          type: string
                           
           400:
             description: Bad request
+            content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
           500:
             description: internal server error
+
       delete:
         tags:
-          - Product
+          - Product Management
         summary: Delete the review of logged in user on given product id.
         parameters:
-        - name: productId
+        - name: productID
           in: query
           required: true
           schema:
             type: string
         
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - rating
-                  - comment
-                  - productId
-                properties:
-                  rating:
-                    type: number
-                    required: true
-                  comment:
-                    type: string
-                    required: true
-                  productId:
-                    type: string
-                    required: true
         responses:
           200:
             description: All good success
@@ -1394,31 +1377,29 @@ paths:
                   properties:
                     success:
                       type: boolean
-                    reviews:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          user:
-                            type: string
-                          name:
-                            type: string
-                          rating: 
-                            type: number
-                          comment: 
-                            type: string
-                          _id: 
-                            type: string
+                    message:
+                      type: string
                           
           400:
             description: Bad request
+            content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
           500:
             description: internal server error
 
+
+# order routes
   /order/create:
     post:
       tags:
-        - Order
+        - Order Management
       summary: create a new order with given details
       parameters:
       
@@ -1551,7 +1532,7 @@ paths:
   /order/{id}:
     get:
       tags:
-        - Order
+        - Order Management
       summary: get details about a order with order id
       parameters:
         - name: id
@@ -1642,7 +1623,7 @@ paths:
   /myorder:
     get:
       tags:
-        - Order
+        - Order Management
       summary: get order of logged in user
       requestBody:
         
@@ -1725,7 +1706,7 @@ paths:
   /admin/orders:
     get:
       tags:
-        - Admin
+        - Order Management
       summary: if admin, get list of all orders
       requestBody:
         
@@ -1802,7 +1783,7 @@ paths:
   /admin/order/{id}:
     put:
       tags:
-        - Admin
+        - Order Management
       summary: if admin, update the status of the order
       parameters:
         - name: id
@@ -1894,7 +1875,7 @@ paths:
           description: internal server error
     delete:
       tags:
-        - Admin
+        - Order Management
       summary: if admin, delete an order with given id
       parameters:
         - name: id
@@ -1923,7 +1904,7 @@ paths:
   /stripekey:
     get:
       tags:
-        - Payment
+        - Payment Management
       summary: gets you the public stripe key
       requestBody:
         
@@ -1946,7 +1927,7 @@ paths:
   /razorpaykey:
     get:
       tags:
-        - Payment
+        - Payment Management
       summary: gets you the public razorpay key
       requestBody:
         
@@ -1969,7 +1950,7 @@ paths:
   /capturestripe:
     post:
       tags:
-        - Payment
+        - Payment Management
       summary: send amount in number. Send amount after multiplying by 100. Also request from swagger UI are not proper as to capture payment we need to send dummy card details
       requestBody:
         content:
@@ -2006,7 +1987,7 @@ paths:
   /capturerazorpay:
     post:
       tags:
-        - Payment
+        - Payment Management
       summary: send amount in number. Send amount after multiplying by 100. Check orders tab, not payments. Also request from swagger UI are not proper as to capture payment we need to send dummy card details.
       requestBody:
         content:

@@ -11,17 +11,29 @@ exports.addProduct = BigPromise(async (req, res, next) => {
     const {name, price, description, category, brand, stock} = req.body
     
     if (!name || !price || !description || !category || !brand || !stock) {
+        res.status(400).json({
+            success: false,
+            message: "Please provide all details"
+        })
         return next(new CustomError("Please provide all details", 401))
     }
 
     // same case with selection of wrong category
     if(!['shortsleeves', 'longsleeves', 'sweatshirt', 'hoodies'].includes(category)) {
-        return next(new CustomError("Please select category ONLY from: short-sleeves, long-sleeves, sweat-shirts, hoodies"))
+        res.status(400).json({
+            success: false,
+            message: "Please select category ONLY from: short-sleeves, long-sleeves, sweat-shirts, hoodies"
+        })
+        return next(new CustomError("Please select category ONLY from: short-sleeves, long-sleeves, sweat-shirts, hoodies", 400))
     }
 
     const imageArray = []
 
     if(!req.files) {
+        res.status(401).json({
+            success: false,
+            message: "Images are required"
+        })
         return next(new CustomError("Images are required", 401))
     }
     else {
@@ -84,6 +96,10 @@ exports.adminGetAllProducts = BigPromise(async (req, res, next) => {
     const products = await Product.find()
 
     if(!products) {
+        res.status(404).json({
+            success: false,
+            message: "No products found"
+        })
         return next(new CustomError("No products found."), 404)
     }
 
@@ -99,6 +115,10 @@ exports.getOneProduct = BigPromise(async (req, res, next) => {
         const product = await Product.findById(req.params.id)
 
         if(!product) {
+            res.status(404).json({
+                success: false,
+                message: "Product does not exist"
+            })
             return next(new CustomError("Product does not exist", 404))
         }
         
@@ -108,6 +128,10 @@ exports.getOneProduct = BigPromise(async (req, res, next) => {
         })
 
     } catch (error) {
+        res.status(401).json({
+            success: false,
+            message: "Invalid product ID"
+        })
         return next(new CustomError("Invalid product ID", 401))
     }
     
@@ -120,12 +144,20 @@ exports.adminUpdateOneProduct = BigPromise(async (req, res, next) => {
     // try {
         
     if(!req.params.id) {
+        res.status(400).json({
+            success: false,
+            message: "Please provide product id"
+        })
         return next(new CustomError("Please provide product id", 400))
     }
     
     const product = await Product.findById(req.params.id)
 
     if(!product) {
+        res.status(404).json({
+            success: false,
+            message: "Product does not exist"
+        })
         return next(new CustomError("Product does not exist", 404))
     }
 
@@ -137,7 +169,11 @@ exports.adminUpdateOneProduct = BigPromise(async (req, res, next) => {
 
     if(req.body.category) {
         if(!['shortsleeves', 'longsleeves', 'sweatshirt', 'hoodies'].includes(req.body.category)) {
-            return next(new CustomError("Please select category ONLY from: short-sleeves, long-sleeves, sweat-shirts, hoodies"))
+            res.status(400).json({
+                success: false,
+                message: "Please select category ONLY from: short-sleeves, long-sleeves, sweat-shirts, hoodies"
+            })
+            return next(new CustomError("Please select category ONLY from: short-sleeves, long-sleeves, sweat-shirts, hoodies", 400))
         }
         newData.category = req.body.category
     }
@@ -186,6 +222,10 @@ exports.adminDeleteOneProduct = BigPromise(async (req, res, next) => {
     const product = await Product.findById(req.params.id)
 
     if(!product) {
+        res.status(404).json({
+            success: false,
+            message: "Product does not exist"
+        })
         return next(new CustomError("Product does not exist", 404))
     }
 
@@ -202,6 +242,10 @@ exports.adminDeleteOneProduct = BigPromise(async (req, res, next) => {
     })
 
     } catch (error) {
+        res.status(401).json({
+            success: false,
+            message: "Invalid Product ID"
+        })
         return next(new CustomError("Invalid Product ID", 401))
     }
 })
@@ -211,6 +255,10 @@ exports.addReview = BigPromise(async (req, res, next) => {
     const {rating, comment, productID} = req.body
 
     if(!rating || !comment || !productID) {
+        res.status(400).json({
+            success: false,
+            message: "Please provide all review information - rating(1-5), comment and productID"
+        })
         return next(new CustomError("Please provide all review information - rating(1-5), comment and productID", 400))
     }
 
@@ -258,6 +306,14 @@ exports.deleteReview = BigPromise(async (req, res, next) => {
 
     const product = await Product.findById(productID)
 
+    if(!product) {
+        res.status(404).json({
+            success: false,
+            message: "Product not found"
+        })
+        return next(new CustomError("Product not found", 404))
+    }
+
     // get the user's review on the product
     const reviews = product.reviews.filter((rev) => rev.user.toString() !== req.user._id.toString())
 
@@ -292,10 +348,18 @@ exports.getOnlyReviewForOneProduct = BigPromise(async (req, res, next) => {
 
     const product = await Product.findById(productID)
 
+    if(!product) {
+        res.status(404).json({
+            success: false,
+            message: "Product not found"
+        })
+        return next(new CustomError("Product not found", 404))
+    }
+
     res.status(200).json({
         success: true,
-        "Overall Ratings": product.ratings,
-        "Total number of reviews": product.numberOfReviews,
+        "Overall_Ratings": product.ratings,
+        "Total_number_of_reviews": product.numberOfReviews,
         reviews: product.reviews
     })
 })

@@ -20,8 +20,6 @@ router.route('/product/reviews')
   .delete(isLoggedIn, deleteReview) // const productID = req.query
 router.route('/product/:id').get(getOneProduct) // routing with params must be de-prioritised in the sequence
 
-  
-
 
 // admin routes
 router.route('/admin/product/add').post(isLoggedIn, customerRole("admin"), addProduct)
