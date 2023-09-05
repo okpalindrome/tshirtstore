@@ -15,7 +15,7 @@ exports.addProduct = BigPromise(async (req, res, next) => {
             success: false,
             message: "Please provide all details"
         })
-        return next(new CustomError("Please provide all details", 401))
+        return next(new CustomError("Please provide all details", 400))
     }
 
     // same case with selection of wrong category
