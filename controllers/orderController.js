@@ -3,7 +3,7 @@ const Product = require('../models/product')
 const BigPromise = require('../middlewares/bigPromise')
 const CustomError = require('../utils/customError')
 
-
+ 
 exports.createOrder = BigPromise(async (req, res, next) => {
     let {
         shippingInfo, // address, phoneNo, city, state, postalCode, country
@@ -23,6 +23,10 @@ exports.createOrder = BigPromise(async (req, res, next) => {
     }
 
     if(!product) {
+        res.status(404).json({
+            success: false,
+            message: "Product does not exist"
+        })
         return next(new CustomError("Product does not exist", 404))
     }
 
@@ -50,6 +54,10 @@ exports.getOneOrderDetails = BigPromise(async (req, res, next) => {
     const order = await Order.findById(req.params.id).populate('user', 'name email')
 
     if(!order) {
+        res.status(404).json({
+            success: false,
+            message: "There is no order with this ID, please check!"
+        })
         return next(new CustomError("There is no order with this ID, please check!", 404))
     }
     else if(order && (order.user.equals(req.user.id) || req.user.role === "admin" || req.user.role === "manager")) {
@@ -59,6 +67,10 @@ exports.getOneOrderDetails = BigPromise(async (req, res, next) => {
         })
     }
     else {
+        res.status(403).json({
+            success: false,
+            message: "You're not authorised to access this order details"
+        })
         return next(new CustomError("You're not authorised to access this order details", 403))
     }
 })
@@ -67,6 +79,10 @@ exports.getMyOrders = BigPromise(async (req, res, next) => {
     const orders = await Order.find({user: req.user._id})
 
     if(!orders) {
+        res.status(404).json({
+            message: false,
+            message: "There are not orders, keep shopping"
+        })
         return next(new CustomError("There are no orders, keep shopping", 404))
     }
     
@@ -91,10 +107,18 @@ exports.adminUpdateOrder = BigPromise(async (req, res, next) => {
     const order = await Order.findById(req.params.id)
     
     if(!order) {
+        res.status(404).json({
+            success: false,
+            message: "No orders found"
+        })
         return next(new CustomError("No orders found", 404))
     }
 
     if(!['processing', 'dispatched', 'shipped', 'delivered'].includes(req.body.orderStatus)) {
+        res.status(400).json({
+            success: false,
+            message: "Wrong option - Please select category ONLY from: processing, dispatched, shipped or delivered"
+        })
         return next(new CustomError("Wrong option - Please select category ONLY from: processing, dispatched, shipped or delivered", 400))
     }
     
@@ -127,6 +151,10 @@ exports.adminDeleteOrder = BigPromise(async (req, res, next) => {
     const order = await Order.findById(req.params.id)
 
     if(!order) {
+        res.status(404).json({
+            success: false,
+            message: "Product deos not exist"
+        })
         return next(new CustomError("Product deos not exist", 404))
     }
 
