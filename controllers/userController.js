@@ -54,6 +54,10 @@ exports.login = BigPromise(async (req, res, next) => {
 
     // check for email or password existing in the request or not
     if (!email || !password) {
+        res.status(400).json({
+            success: false,
+            message: 'Please provide email and password'
+        })
         return next(new CustomError('Please provide email and password', 400))
     }
 
@@ -200,7 +204,7 @@ exports.getLoggedInUserDetails = BigPromise(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        user,
+        user
     })
 })
 
