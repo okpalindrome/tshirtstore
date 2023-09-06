@@ -18,6 +18,7 @@ exports.acceptStripePayment = BigPromise(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
+        amount: req.body.amount,
         client_sceret: paymentIntent.client_sceret
     })
 })
@@ -39,6 +40,7 @@ exports.acceptRazorpayPayment = BigPromise(async (req, res, next) => {
     })
 
     res.status(200).json({
-        reponse: myOrder
+        success: true, 
+        myOrder: myOrder
     })
 })
