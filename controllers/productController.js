@@ -3,6 +3,8 @@ const Product = require("../models/product");
 const CustomError = require("../utils/customError");
 const cloudinary = require("cloudinary");
 const WhereClause = require("../utils/whereClause");
+const Order = require("../models/order");
+const mongoose = require("mongoose");
 
 exports.addProduct = BigPromise(async (req, res, next) => {
     
@@ -252,7 +254,31 @@ exports.adminDeleteOneProduct = BigPromise(async (req, res, next) => {
 
 exports.addReview = BigPromise(async (req, res, next) => {
 
-    const {rating, comment, productID} = req.body
+    let {rating, comment, productID} = req.body
+
+    // allow user to add review for only the product which they have placed an order/purchased
+    const myOrder = await Order.find({user: {$eq: req.user._id}})
+    
+    let flag = false
+
+    if(myOrder) {    
+        for (let index = 0; index < myOrder.length; index++) {
+            myOrder[index].orderItems.forEach((item) => {
+                
+                if (item.product.toString() === productID) { // also, myOrder[index].orderStatus === "delivered" 
+                    flag = true
+            }
+            })
+        }
+    }
+    
+    if(!flag) {
+        res.status(401).json({
+            success: false,
+            message: "You need to buy this product before sharing a review on it",
+            flag
+        })
+    }
 
     if(!rating || !comment || !productID) {
         res.status(400).json({
@@ -351,7 +377,7 @@ exports.getOnlyReviewForOneProduct = BigPromise(async (req, res, next) => {
     if(!product) {
         res.status(404).json({
             success: false,
-            message: "Product not found"
+            message: "Product not found or this product does not have any reviews yet."
         })
         return next(new CustomError("Product not found", 404))
     }

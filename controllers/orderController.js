@@ -104,7 +104,9 @@ exports.adminGetAllOrders = BigPromise(async (req, res, next) => {
 })
 
 exports.adminUpdateOrder = BigPromise(async (req, res, next) => {
-    const order = await Order.findById(req.params.id)
+    
+    try {
+    const order = await Order.findById({_id: req.params.id})
     
     if(!order) {
         res.status(404).json({
@@ -114,6 +116,7 @@ exports.adminUpdateOrder = BigPromise(async (req, res, next) => {
         return next(new CustomError("No orders found", 404))
     }
 
+
     if(!['processing', 'dispatched', 'shipped', 'delivered'].includes(req.body.orderStatus)) {
         res.status(400).json({
             success: false,
@@ -122,14 +125,16 @@ exports.adminUpdateOrder = BigPromise(async (req, res, next) => {
         return next(new CustomError("Wrong option - Please select category ONLY from: processing, dispatched, shipped or delivered", 400))
     }
     
-    if(req.body.orderStatus === 'delivered') {
-        if(order.orderStatus === 'delivered') {
+    
+        if(order.orderStatus === "delivered") {
             res.status(400).json({
                 success: false,
                 message: "Order was already delivered on " + order.deliveredOn
             })
             return next(new CustomError("Order is delivered", 400))
         }
+        
+        if(req.body.orderStatus === "delivered") {
         order.deliveredOn = Date.now()
 
         for (let index = 0; index < order.orderItems.length; index++) {
@@ -145,17 +150,29 @@ exports.adminUpdateOrder = BigPromise(async (req, res, next) => {
         message: "Order status is updated successfully.",
         order
     })
+
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: "Invalid order ID"
+        })
+        return next(new CustomError("Invalid order ID", 400))
+    }
+
 })
 
 exports.adminDeleteOrder = BigPromise(async (req, res, next) => {
+    
+    try {
+        
     const order = await Order.findById(req.params.id)
 
     if(!order) {
         res.status(404).json({
             success: false,
-            message: "Product deos not exist"
+            message: "Order deos not exist"
         })
-        return next(new CustomError("Product deos not exist", 404))
+        return next(new CustomError("Order deos not exist", 404))
     }
 
     // object.remove() does not work
@@ -165,6 +182,12 @@ exports.adminDeleteOrder = BigPromise(async (req, res, next) => {
         success: true,
         message: "Order removed"
     })
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: "Invalid order ID"
+        })      
+    }
 })
 
 // updating the stock
