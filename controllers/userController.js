@@ -106,8 +106,8 @@ exports.forgotPassword = BigPromise(async (req, res, next) => {
     const {email} = req.body
 
     if(!email){
-        res.status(400).json({
-            success: false,
+        res.status(200).json({
+            success: true,
             message: "Please provide a valid email address"
         })
         return next(new CustomError("Please provide a valid email address", 400))
@@ -118,7 +118,7 @@ exports.forgotPassword = BigPromise(async (req, res, next) => {
 
     if (!user){
         res.status(200).json({
-            success: false,
+            success: true,
             message: "If user exist, email will be send successfully"
         })
         return next(new CustomError("Please provide a valid email address", 400))

@@ -48,7 +48,7 @@ paths:
     post:
       tags:
         - User Management
-      summary: signup a new user. required fields are - name, email, password and photo
+      summary: signup a new user
       requestBody:
         content:
           multipart/form-data:
@@ -121,7 +121,7 @@ paths:
     post:
       tags:
         - User Management
-      summary: login a new user. required fields are -  email and password. Also adds httpOnly cookie in browser. It sends token in response too.
+      summary: login. Also adds httpOnly cookie in browser with token response.
       requestBody:
         content:
           application/json:
@@ -185,7 +185,7 @@ paths:
     get:
       tags:
         - User Management
-      summary: get request to logout the user. Also removes httpOnly cookies 
+      summary: Logout the user. Also removes httpOnly cookies 
       responses:
         200:
           description: All good success
@@ -217,7 +217,7 @@ paths:
     post:
       tags:
         - User Management
-      summary: sends an email with link to forgot password. Contains the token for user validation. Public hosted version will not send email to your account. Use your own SMTP details to access this feature on local project
+      summary: sends an email with link containing the token to reset the user password. FYI - I do have my own smtp server or service subscription, so you won't actually receive an email from this end-point.
       requestBody:
         content:
           application/json:
@@ -258,7 +258,7 @@ paths:
     post:
       tags:
         - User Management
-      summary: Allows user to reset password, validated based on token. send password and confirm password fields
+      summary: Allows user to reset password, validated based on token.
       parameters:
         - name: token
           in: path
@@ -328,7 +328,7 @@ paths:
     get:
       tags:
         - User Management
-      summary: Gets all details about logged in user. Send token in cookies as named token or send Bearer Auth
+      summary: Gets all details about logged in user.
       responses:
         200:
           description: All good success
@@ -377,7 +377,7 @@ paths:
     post:
       tags:
         - User Management
-      summary: User can update the password if they are logged in. Send oldPassword, new password and confirm password
+      summary: Logged in user can reset thier password.
       requestBody:
         content:
           application/json:
@@ -444,7 +444,7 @@ paths:
     post:
       tags:
         - User Management
-      summary: User can update the name, emails and photo. Photo is optional
+      summary: User can update the name, emails or photo. 
       requestBody:
         content:
           multipart/form-data:
@@ -511,7 +511,7 @@ paths:
     get:
       tags:
         - User Management
-      summary: If user is admin, response will get array of all users
+      summary: If user is admin, get array of all users
       responses:
         200:
           description: All good success
@@ -1160,7 +1160,7 @@ paths:
     put:
       tags:
         - Product Management
-      summary: If admin, update the product. photos are optional to pass. Rest all body is set to be updated to what you pass here.
+      summary: If admin, update the exist product details.
       parameters:
         - name: id
           in: path
@@ -1189,9 +1189,11 @@ paths:
                   type: string
                 photos:
                   in: formData
-                  description: The uploaded photos
-                  type: file
-                  format: binary
+                  description: Upload photos
+                  type: array
+                  items:
+                    type: file
+                    format: binary
         
       responses:
         200:
@@ -1311,7 +1313,7 @@ paths:
           - Product Management
         summary: A simple get request will give you all reviews for given products
         parameters:
-        - name: id
+        - name: productID
           in: query
           description: id of the product
           required: true
@@ -1512,11 +1514,7 @@ paths:
                   items:
                     type: object
                     properties:
-                      name:
-                        type: string
                       quantity:
-                        type: string
-                      price:
                         type: number
                       product:
                         type: string
@@ -2084,7 +2082,7 @@ paths:
     post:
       tags:
         - Payment Management
-      summary: send amount in number. Send amount after multiplying by 100. Also request from swagger UI are not proper as to capture payment we need to send dummy card details
+      summary: Stripe - Request from swagger UI are not proper as to capture payment we need to send dummy card details
       requestBody:
         content:
           multipart/form-data:
@@ -2130,7 +2128,7 @@ paths:
     post:
       tags:
         - Payment Management
-      summary: send amount in number. Send amount after multiplying by 100. Check orders tab, not payments. Also request from swagger UI are not proper as to capture payment we need to send dummy card details.
+      summary: Stripe - Request from swagger UI are not proper as to capture payment we need to send dummy card details
       requestBody:
         content:
           multipart/form-data:
