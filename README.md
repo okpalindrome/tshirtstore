@@ -35,8 +35,8 @@ RAZORPAY_API_KEY=
 RAZORPAY_SECRET=
 ```
 
-1. npm install
-2. npm run start/dev (production/dev mode)
+1. `npm install`
+2. `npm run start / dev` (production/dev mode)
 3. Visit `http://localhost:4000/api-docs/`
 
 ### Tech Stack used :
