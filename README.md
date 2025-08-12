@@ -1,4 +1,4 @@
-Practice Project from https://courses.learncodeonline.in/learn/Pro-Backend-Developer-course by @hiteshchoudhary
+Practice Project from https://www.udemy.com/course/pro-javascript-backend-developer
 
 An enterprise level Ecommerce site backend API representing using Swagger UI. 
 
