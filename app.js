@@ -40,9 +40,9 @@ app.use("/api/v1", product);
 app.use("/api/v1", payment);
 app.use("/api/v1", order);
 
-// app.get("/", (req, res) => {
-//     res.render('index')
-// })
+app.get("/", (req, res) => {
+    res.render('index')
+})
 
 // app.get("/signuptest", (req, res) => {
 //     res.render('signuptest')

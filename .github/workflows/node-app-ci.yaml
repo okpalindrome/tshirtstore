@@ -43,3 +43,4 @@ jobs:
             echo "App failed to start or connect to DB:"
             cat app.log
             exit 1
+          fi
