@@ -1,10 +1,10 @@
 openapi: "3.0.0"
 info:
-  title: Tshirt Store API
+  title: T-shirt Store API
   description: Backend API for ecom site
   version: 1.1.0
   contact:
-    email: Nitinchoudharyn14@gmail.com
+    email: okpalindrome@gmail.com
     url: "https://github.com/okpalindrome"
 
 # servers:
@@ -15,23 +15,22 @@ info:
 
 servers:
   - url: "{protocol}://{url}/api/{version}"
-    description: TShirtStore Swagger API 
+    description: T-ShirtStore Swagger API 
     variables:
       version:
         enum:
           - v1
-          - v2
         default: v1
       url:
         enum:
           - localhost:4000
-          - tshirtstore.herokuapp.com
-        default: localhost:4000
+          - tshirtstore.palindromiq.com
+        default: tshirtstore.palindromiq.com
       protocol:
         enum:
           - http
           - https
-        default: http
+        default: https
 
 components:
   securitySchemes:

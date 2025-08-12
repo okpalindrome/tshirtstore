@@ -26,6 +26,14 @@ exports.signup = BigPromise(async (req, res, next) => {
         return next(new CustomError('Name, email and password are required!', 400))
     }
 
+    if(password.length < 8) {
+        return res.status(400).json({
+            success: false,
+            message: "Password length must be minimum 8 characters!"
+        });
+    }
+
+
     let file = req.files.photo
     
     const result = await cloudinary.v2.uploader.upload(file.tempFilePath, {
