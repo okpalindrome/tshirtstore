@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_URL: ${{ secrets.DB_URL }}  # Or hardcode for testing
+      DB_URL: ${{ secrets.DB_URL }} 
 
     steps:
       - name: Checkout repository
